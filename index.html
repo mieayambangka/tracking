@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff7fa">
+  <meta name="description" content="Try four hand gestures in a real-time webcam demo. Show a pose, hold it for a moment, and see what your hand can do.">
+  <title>Gesture Detector — A little magic in every gesture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Gesture Detector home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M11 16V9.5a2 2 0 0 1 4 0V15m0-2V7.5a2 2 0 0 1 4 0V15m0-1V9a2 2 0 0 1 4 0v9.5A8.5 8.5 0 0 1 14.5 27h-1a8 8 0 0 1-5.7-2.4l-3.1-3.2a2 2 0 0 1 2.8-2.8l3.5 3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 18.5c2.4-1.6 4.7-1.6 7 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-name">gesture <em>detector</em></span>
+      </a>
+
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#gestures">The gestures</a>
+        <a href="#how-it-works">How it works</a>
+        <a class="nav-cta" href="#detector">Try the camera
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4.5 11.5 11.5 4.5m-6 0h6v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <h1 id="hero-title">A little magic<br>in every <em>gesture.</em></h1>
+          <div class="hero-bottom">
+            <p>Meet a tiny gesture playground. Show a pose to your camera, hold for a beat, and watch it bloom.</p>
+            <button class="button button-primary" type="button" data-start-camera>
+              Try it with your camera
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4 10h11m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <span class="hero-flower" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M32 10c6.5 0 8.2 8.7 3.6 12.1 6-1.3 12.1 5 8.4 10.7 5.7-3.7 12 2.4 10.7 8.4C59.3 36.6 68 38.3 68 44.8s-8.7 8.2-13.3 3.6c1.3 6-5 12.1-10.7 8.4 3.7 5.7-2.4 12-8.4 10.7C40.2 72.1 38.5 80.8 32 80.8s-8.2-8.7-3.6-13.3c-6 1.3-12.1-5-8.4-10.7-5.7 3.7-12-2.4-10.7-8.4C4.7 52.9-4 51.2-4 44.7s8.7-8.2 13.3-3.6c-1.3-6 5-12.1 10.7-8.4-3.7-5.7 2.4-12 8.4-10.7C23.8 18.7 25.5 10 32 10Z" transform="translate(4 -13) scale(.88)" stroke="currentColor" stroke-width="1.1"/>
+            <circle cx="32" cy="32" r="4.3" fill="currentColor"/>
+          </svg>
+        </span>
+        <img class="hero-ribbon" src="images/satin-bow.png" alt="" aria-hidden="true" width="256" height="256">
+      </section>
+
+      <section id="detector" class="detector-section" aria-labelledby="detector-title">
+        <div class="section-heading detector-heading">
+          <div>
+            <h2 id="detector-title">Ready for your <em>close-up?</em></h2>
+          </div>
+          <div id="status-indicator" class="status-indicator" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="status-text">Camera off</span>
+          </div>
+        </div>
+
+        <div class="detector-layout">
+          <section class="camera-section" aria-label="Live gesture detector">
+            <div class="camera-topline">
+              <span class="camera-topline-label"><span class="camera-live-mark" aria-hidden="true"></span>LIVE MIRROR</span>
+              <span class="camera-topline-detail">Your live preview</span>
+            </div>
+
+            <div class="camera-container">
+              <video id="webcam" autoplay playsinline muted aria-label="Live mirrored camera preview"></video>
+              <canvas id="overlay-canvas" aria-hidden="true"></canvas>
+              <div id="gesture-label" class="gesture-label hidden" role="status" aria-live="polite">
+                <span id="gesture-icon"></span>
+                <span id="gesture-name"></span>
+              </div>
+
+              <div id="camera-placeholder" class="camera-placeholder">
+                <div class="placeholder-ornament" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" fill="none">
+                    <path d="M13 25V15a3 3 0 0 1 6 0v8m0-3V10a3 3 0 0 1 6 0v13m0-4v-6a3 3 0 0 1 6 0v11m0-5a3 3 0 0 1 6 0v8a13 13 0 0 1-13 13h-2a12 12 0 0 1-8.5-3.5l-4.1-4.1a3 3 0 0 1 4.2-4.2l3.4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <h3 id="camera-placeholder-title">Your mirror is waiting</h3>
+                <p id="camera-placeholder-copy">Allow camera access to see your hand and try the four gestures.</p>
+                <button class="button button-primary placeholder-button" type="button" data-start-camera>
+                  Turn on the camera
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M4 10h11m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <span class="placeholder-footnote">Camera access begins only when you choose to try it.</span>
+              </div>
+            </div>
+
+            <div class="camera-footline">
+              <span>Show one hand to your camera</span>
+              <span class="camera-footline-spark" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M10 1.8v16.4M1.8 10h16.4M4.2 4.2l11.6 11.6m0-11.6L4.2 15.8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span>Hold a pose for a moment</span>
+            </div>
+          </section>
+
+          <aside id="gestures" class="gesture-guide" aria-labelledby="gesture-guide-title">
+            <div class="guide-heading">
+              <div>
+                <h3 id="gesture-guide-title">Four ways to <em>wave hello.</em></h3>
+              </div>
+              <svg class="guide-bow" viewBox="0 0 48 32" fill="none" aria-hidden="true">
+                <path d="M22 15C13 5 5 4 4 9c-1 5 8 8 18 7Zm4 0c9-10 17-11 18-6 1 5-8 8-18 7Zm-2-2v5m-4 8 4-6 4 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div id="gesture-list" class="gesture-list" aria-live="polite">
+              <!-- Gesture guide is generated from the existing gesture definitions. -->
+            </div>
+            <p class="guide-footer">A detected pose is highlighted here while you hold it.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="feature-section" aria-labelledby="feature-title">
+        <div class="feature-intro">
+          <h2 id="feature-title">Made to feel like <em>magic.</em><br>Built to notice your hand.</h2>
+        </div>
+        <div class="feature-list">
+          <article class="feature-item">
+            <div>
+              <h3>It sees the pose</h3>
+              <p>MediaPipe follows your hand landmarks in the live camera preview.</p>
+            </div>
+          </article>
+          <article class="feature-item">
+            <div>
+              <h3>It waits for a beat</h3>
+              <p>Hold a recognized pose for 800 milliseconds to reveal its effect.</p>
+            </div>
+          </article>
+          <article class="feature-item">
+            <div>
+              <h3>It answers in kind</h3>
+              <p>Each pose reveals its own reaction, including a Tenor GIF for thumbs up.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="how-section" aria-labelledby="how-title">
+        <div class="how-intro">
+          <h2 id="how-title">Three little <em>steps.</em></h2>
+          <p>No setup to learn. Just you, your hand, and a camera.</p>
+        </div>
+        <ol class="steps-list">
+          <li class="step-item">
+            <span class="step-marker" aria-hidden="true"><span>1</span></span>
+            <div><h3>Say hello to your camera</h3><p>Choose “Turn on the camera” and allow access when your browser asks.</p></div>
+          </li>
+          <li class="step-item">
+            <span class="step-marker" aria-hidden="true"><span>2</span></span>
+            <div><h3>Pick a pose</h3><p>Try a thumbs up, a peace sign, an open palm, or a middle finger.</p></div>
+          </li>
+          <li class="step-item">
+            <span class="step-marker" aria-hidden="true"><span>3</span></span>
+            <div><h3>Hold it for a moment</h3><p>Keep your hand in view. The gesture guide will light up when it recognizes your pose.</p></div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="closing-note" aria-label="Try the gesture detector">
+        <span class="closing-flower" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M10 1.8v16.4M1.8 10h16.4M4.2 4.2l11.6 11.6m0-11.6L4.2 15.8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <p>Ready to give it a <em>little wave?</em></p>
+        <a href="#detector" class="text-link">Meet your mirror
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4.5 11.5 11.5 4.5m-6 0h6v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M11 16V9.5a2 2 0 0 1 4 0V15m0-2V7.5a2 2 0 0 1 4 0V15m0-1V9a2 2 0 0 1 4 0v9.5A8.5 8.5 0 0 1 14.5 27h-1a8 8 0 0 1-5.7-2.4l-3.1-3.2a2 2 0 0 1 2.8-2.8l3.5 3.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 18.5c2.4-1.6 4.7-1.6 7 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-name">gesture <em>detector</em></span>
+      </a>
+      <p>A little gesture playground for curious hands.</p>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#gestures">The gestures</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#top">Back to top</a>
+      </nav>
+    </footer>
+  </div>
+
+  <div id="effect-overlay" class="effect-overlay hidden" role="status" aria-live="polite" aria-labelledby="effect-title">
+    <img id="effect-image" src="images/sanz.jpg" alt="Thumbs Up visual effect">
+    <div id="effect-tenor" class="tenor-gif-embed hidden" data-postid="9977204665351088253" data-share-method="host" data-aspect-ratio="0.769231" data-width="100%" aria-label="Thumbs-up reaction GIF">
+      <a href="https://tenor.com/view/indian-guy-shushing-meme-gif-9977204665351088253">Indian Guy Shushing Meme GIF</a>
+      from <a href="https://tenor.com/search/indian+guy+shushing+meme-gifs">Indian Guy Shushing Meme GIFs</a>
+    </div>
+    <div id="effect-title" class="effect-title"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1675466124/drawing_utils.min.js" crossorigin="anonymous"></script>
+  <script src="gestures.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
